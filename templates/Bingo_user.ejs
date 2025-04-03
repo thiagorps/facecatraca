@@ -1,0 +1,228 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=.7">
+	<title>Bingo RM</title>
+	<script src="https://kit.fontawesome.com/f181766a70.js" crossorigin="anonymous"></script>
+	<script src="/socket.io/socket.io.js"></script>
+
+	<style>
+		@font-face {
+			font-family: 'friz-quadrata';
+			src: url("friz-quadrata-std.otf");
+		}
+
+		.container {
+			background-color: lightgray;
+			padding: 5px;
+			border: solid 1px gray;
+			display: flex;
+			flex-direction: row;
+		}
+
+		#HeaderBingo {
+			display: flex;
+			flex-direction: row;
+			background-color: #f37321;
+			box-shadow: 1px 0 5px black;
+			border-radius: 10px;
+		}
+
+		#numbers {
+			display: flex;
+			flex-direction: row;
+		}
+
+		.title {
+			font-family: friz-quadrata;
+			color: white;
+			text-shadow: inset 1px 1px 1px white;
+			color: #252525;
+			font-size: 50px;
+		}
+
+		.title::before {
+			content: '';
+			background-image: url(logo.png);
+			background-size: contain;
+			background-repeat: no-repeat;
+			width: 100px;
+			height: 74px;
+			display: inline-block
+		}
+		.title::after {
+			content: '';
+			background-image: url(logo_fr.png);
+			background-size: cover;
+			background-repeat: no-repeat;
+			width: 126px;
+			height: 73px;
+			display: inline-block;
+		}
+		.B,
+		.header {
+			max-width: 90px;
+			min-width: 90px;
+			display: flex;
+			flex-direction: row;
+			list-style-type: none;
+			margin: 5px 5px;
+			padding: 3px;
+			flex-wrap: wrap;
+			justify-content: center;
+
+		}
+
+		.B {
+			background-image: white;
+			box-shadow: 0 0 5px 5px rgba(0, 0, 0, .5);
+			padding: 3px;
+			border-radius: 5px;
+		}
+
+		.header li {
+			box-shadow: 0px 1px 5px white;
+			background-image: radial-gradient(circle, white, gray)
+		}
+
+		.B li {
+			min-width: 24px;
+			min-height: 25px;
+			font-size: 20px;
+			background-color: white;
+			border-radius: 35px;
+			margin: 5px;
+			align-items: center;
+			text-align: center;
+			box-shadow: 1px 1px 5px black;
+			padding: 5px;
+
+		}
+
+		.B li.select {
+			background-image: radial-gradient(circle, red, rgba(0, 0, 0, .8));
+			color: white;
+		}
+
+		.header li {
+			min-width: 54px;
+			min-height: 25px;
+			font-size: 40px;
+			background-color: white;
+			border-radius: 35px;
+			margin: 10px;
+			align-items: center;
+			text-align: center;
+		}
+
+		input {
+			width: 70px;
+			font-size: 50px;
+			box-shadow: inset 0px 0px 2px 3px rgb(107, 101, 101);
+			border: 0;
+		}
+
+		i {
+			font-size: 55px;
+			color: #690297;
+			text-shadow: 1px 1px 2px black;
+		}
+	</style>
+	<script>
+		window.onload = function () {
+			var els = document.getElementsByClassName("B")
+			var contador = 1
+
+			for (var x = 0; x < els.length; x++) {
+				var el = els.item(x)
+				for (y = 0; y < 15; y++) {
+					var li = document.createElement("li")
+					li.id = `item${contador}`
+					li.innerText = contador < 10 ? "0" + contador : contador
+					el.appendChild(li)
+					contador += 1
+				}
+			}
+
+			var socket = io()
+
+			socket.on("Connect", (numbers) => {
+				console.log(numbers)
+				numbers.forEach(number => {
+					try {
+						document.getElementById("item" + number).className = 'select'
+					} catch (e) {
+
+					}
+
+				});
+
+			})
+
+			socket.on("setNumber", (number) => {
+				document.getElementById("addNumber").value = number
+				document.getElementById("item" + number).className = 'select'
+			})
+			socket.on("removeNumber", (number) => {
+				document.getElementById("item" + number).className = ""
+			})
+			socket.on("refresh", function () { window.location.reload() })
+		}
+	</script>
+</head>
+
+<body>
+	<div class="container">
+
+
+		<div class="content">
+			<div style="display:flex;justify-content: space-between;margin-bottom: 10px">
+
+				<div class="title">
+					Bingo
+				</div>
+				<input type=number id=addNumber disabled=true>
+			</div>
+			<div id="HeaderBingo">
+				<ul class="header">
+					<li>B</li>
+				</ul>
+				<ul class="header">
+					<li>I</li>
+				</ul>
+				<ul class="header">
+					<li>N</li>
+				</ul>
+				<ul class="header">
+					<li>G</li>
+				</ul>
+				<ul class="header">
+					<li>O</li>
+				</ul>
+			</div>
+
+			<div id="numbers">
+				<ul class="B">
+
+				</ul>
+				<ul class="B">
+
+				</ul>
+				<ul class="B">
+
+				</ul>
+				<ul class="B">
+
+				</ul>
+				<ul class="B">
+
+				</ul>
+			</div>
+		</div>
+
+	</div>
+</body>
+
+</html>
