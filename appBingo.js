@@ -11,7 +11,17 @@ app.use( express.static( "templates" ) );
 //app.use(bodyParser.raw({ type: 'multipart/mixed' }));
 // Permite receber JSON no body da requisição
 app.use(express.json());
-
+// Middleware para capturar o corpo da requisição "do jeito que vier"
+app.use((req, res, next) => {
+    let data = "";
+    req.on("data", chunk => {
+      data += chunk;
+    });
+    req.on("end", () => {
+      req.rawBody = data; // Agora você pode acessar req.rawBody
+      next();
+    });
+  });
 // Permite receber dados de formulário (opcional)
 app.use(express.urlencoded({ extended: true }));
 app.all("/User",(req,res)=>{
@@ -22,7 +32,7 @@ app.all("/User",(req,res)=>{
 
 app.all("/notification",(req,res)=>{
     console.log("Conectou no notification")
-    console.log(req.body)
+    console.log(req.rawBody)
     res.status=200
     res.end(JSON.stringify({"message":"ABBCASDF","code":200,"auth":"true"}))
 })
