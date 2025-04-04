@@ -8,8 +8,12 @@ const bodyParser = require('body-parser');
 app.set('view engine', 'ejs');
 app.set('views', './templates');
 app.use( express.static( "templates" ) );
-app.use(bodyParser.raw({ type: 'multipart/mixed' }));
+//app.use(bodyParser.raw({ type: 'multipart/mixed' }));
+// Permite receber JSON no body da requisição
+app.use(express.json());
 
+// Permite receber dados de formulário (opcional)
+app.use(express.urlencoded({ extended: true }));
 app.all("/User",(req,res)=>{
     res.status=200
     res.render('Bingo_user')
